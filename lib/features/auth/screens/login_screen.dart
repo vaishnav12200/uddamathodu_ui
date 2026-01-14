@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../admin/screens/admin_dashboard_screen.dart';
 import '../../member/screens/member_dashboard_screen.dart';
 import 'signup_screen.dart';
 
@@ -608,13 +609,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
           );
         } else {
-          // Admin login - TODO: Navigate to Admin Dashboard
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Admin Dashboard coming soon! Logged in as ${_selectedRole}',
-              ),
-              backgroundColor: AppColors.success,
+          // Admin login - Navigate to Admin Dashboard
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AdminDashboardScreen(),
             ),
           );
         }
