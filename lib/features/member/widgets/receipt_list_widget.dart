@@ -10,6 +10,8 @@ class Receipt {
   final DateTime date;
   final String utrNumber;
   final String status;
+  final bool isNew;
+  final String? approvedBy;
 
   Receipt({
     required this.id,
@@ -19,6 +21,8 @@ class Receipt {
     required this.date,
     required this.utrNumber,
     required this.status,
+    this.isNew = false,
+    this.approvedBy,
   });
 }
 
@@ -33,24 +37,37 @@ class ReceiptListWidget extends StatelessWidget {
   final List<Receipt> _sampleReceipts = [
     Receipt(
       id: '1',
+      receiptNumber: 'RCP-2024-0126',
+      contributionType: 'Monthly',
+      amount: 500,
+      date: DateTime.now().subtract(const Duration(hours: 2)),
+      utrNumber: '512345678908',
+      status: 'Approved',
+      isNew: true,
+      approvedBy: 'Secretary',
+    ),
+    Receipt(
+      id: '2',
       receiptNumber: 'RCP-2024-0125',
       contributionType: 'Monthly',
       amount: 500,
       date: DateTime(2024, 3, 5),
       utrNumber: '412345678901',
       status: 'Approved',
+      approvedBy: 'Secretary',
     ),
     Receipt(
-      id: '2',
+      id: '3',
       receiptNumber: 'RCP-2024-0098',
       contributionType: 'Annual',
       amount: 3000,
       date: DateTime(2024, 2, 10),
       utrNumber: '412345678902',
       status: 'Approved',
+      approvedBy: 'Treasurer',
     ),
     Receipt(
-      id: '3',
+      id: '4',
       receiptNumber: 'Pending',
       contributionType: 'Monthly',
       amount: 500,
@@ -282,7 +299,7 @@ class ReceiptListWidget extends StatelessWidget {
           ),
           Expanded(
             flex: 2,
-            child: Center(child: _buildStatusBadge(receipt.status)),
+            child: Center(child: _buildStatusBadge(receipt.status, isNew: receipt.isNew)),
           ),
           Expanded(
             flex: 1,
@@ -346,7 +363,7 @@ class ReceiptListWidget extends StatelessWidget {
                       : AppColors.textLight,
                 ),
               ),
-              _buildStatusBadge(receipt.status),
+              _buildStatusBadge(receipt.status, isNew: receipt.isNew),
             ],
           ),
           const SizedBox(height: 8),
@@ -412,7 +429,7 @@ class ReceiptListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(String status) {
+  Widget _buildStatusBadge(String status, {bool isNew = false}) {
     Color bgColor;
     Color textColor;
 
@@ -434,20 +451,50 @@ class ReceiptListWidget extends StatelessWidget {
         textColor = AppColors.textLight;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: textColor,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isNew) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.fiber_new_rounded, color: Colors.white, size: 14),
+                const SizedBox(width: 2),
+                Text(
+                  'NEW',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+        ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            status,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -486,7 +533,7 @@ class ReceiptListWidget extends StatelessWidget {
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          width: 400,
+          width: 450,
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -495,9 +542,31 @@ class ReceiptListWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Receipt Preview',
-                    style: AppTextStyles.heading3,
+                  Row(
+                    children: [
+                      Text(
+                        'Receipt Preview',
+                        style: AppTextStyles.heading3,
+                      ),
+                      if (receipt.isNew) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'NEW',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -505,7 +574,45 @@ class ReceiptListWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              
+              // New Receipt Notification Banner
+              if (receipt.isNew)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle_rounded, color: AppColors.success, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Payment Approved!',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ),
+                            Text(
+                              'Your receipt is ready to download',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               
               // Receipt Content
               Container(
@@ -520,34 +627,81 @@ class ReceiptListWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryBlue.withOpacity(0.1),
+                        gradient: AppColors.primaryGradient,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.people_alt_rounded,
-                        color: AppColors.primaryBlue,
+                        color: Colors.white,
                         size: 32,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Uddamthodu Tharavad',
-                      style: AppTextStyles.heading3,
+                      style: AppTextStyles.heading3.copyWith(fontSize: 18),
                     ),
-                    const SizedBox(height: 4),
                     Text(
-                      'Payment Receipt',
+                      'Management System',
                       style: AppTextStyles.bodySmall,
                     ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'PAYMENT RECEIPT',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.success,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 20),
+                    const Divider(),
+                    const SizedBox(height: 16),
                     
                     _buildReceiptRow('Receipt No.', receipt.receiptNumber),
                     _buildReceiptRow('Date', _formatDate(receipt.date)),
+                    const Divider(height: 24),
                     _buildReceiptRow('Member ID', 'UM0251'),
-                    _buildReceiptRow('Type', receipt.contributionType),
-                    _buildReceiptRow('Amount', '₹ ${_formatAmount(receipt.amount)}'),
-                    _buildReceiptRow('UTR', receipt.utrNumber),
+                    _buildReceiptRow('Member Name', 'Ramesh Varma'),
+                    const Divider(height: 24),
+                    _buildReceiptRow('Contribution Type', receipt.contributionType),
+                    _buildReceiptRow('Amount', '₹ ${_formatAmount(receipt.amount)}', isBold: true),
+                    _buildReceiptRow('UTR/Transaction ID', receipt.utrNumber),
+                    const Divider(height: 24),
+                    if (receipt.approvedBy != null)
+                      _buildReceiptRow('Approved By', receipt.approvedBy!),
                     _buildReceiptRow('Status', receipt.status),
+                    
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundLight,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.verified, size: 16, color: AppColors.success),
+                          const SizedBox(width: 8),
+                          Text(
+                            'This is a computer generated receipt',
+                            style: AppTextStyles.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -571,7 +725,7 @@ class ReceiptListWidget extends StatelessWidget {
                         _downloadReceipt(context, receipt);
                       },
                       icon: const Icon(Icons.download_outlined),
-                      label: const Text('Download'),
+                      label: const Text('Download PDF'),
                     ),
                   ),
                 ],
@@ -583,7 +737,7 @@ class ReceiptListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildReceiptRow(String label, String value) {
+  Widget _buildReceiptRow(String label, String value, {bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -598,7 +752,8 @@ class ReceiptListWidget extends StatelessWidget {
           Text(
             value,
             style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: isBold ? AppColors.primaryBlue : AppColors.textPrimary,
             ),
           ),
         ],

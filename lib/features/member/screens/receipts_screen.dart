@@ -13,6 +13,7 @@ class Receipt {
   final String utrNumber;
   final String approvedBy;
   final String status;
+  final bool isNew;
 
   Receipt({
     required this.id,
@@ -25,6 +26,7 @@ class Receipt {
     required this.utrNumber,
     required this.approvedBy,
     required this.status,
+    this.isNew = false,
   });
 }
 
@@ -41,6 +43,19 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
   final List<String> _filters = ['All', 'Approved', 'Pending'];
   
   final List<Receipt> _receipts = [
+    Receipt(
+      id: '0',
+      receiptNumber: 'RCP-2024-0126',
+      memberName: 'Ramesh Varma',
+      memberId: 'UM0251',
+      contributionType: 'Monthly',
+      amount: 500,
+      date: DateTime.now().subtract(const Duration(hours: 2)),
+      utrNumber: '512345678908',
+      approvedBy: 'Secretary',
+      status: 'Approved',
+      isNew: true,
+    ),
     Receipt(
       id: '1',
       receiptNumber: 'RCP-2024-0125',
@@ -312,7 +327,12 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
         color: AppColors.backgroundWhite,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isApproved ? AppColors.borderLight : AppColors.warning.withOpacity(0.3),
+          color: receipt.isNew 
+              ? AppColors.primaryBlue.withOpacity(0.5)
+              : isApproved 
+                  ? AppColors.borderLight 
+                  : AppColors.warning.withOpacity(0.3),
+          width: receipt.isNew ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -322,7 +342,40 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
           ),
         ],
       ),
-      child: Padding(
+      child: Stack(
+        children: [
+          // New Badge
+          if (receipt.isNew)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBlue,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(15),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.fiber_new_rounded, color: Colors.white, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      'NEW',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,6 +481,8 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
           ],
         ),
       ),
+        ],
+      ),
     );
   }
 
@@ -495,7 +550,36 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Receipt Preview', style: AppTextStyles.heading3),
+                  Row(
+                    children: [
+                      Text('Receipt Preview', style: AppTextStyles.heading3),
+                      if (receipt.isNew) ...[
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.fiber_new_rounded, color: Colors.white, size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                'NEW',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close),
@@ -503,6 +587,44 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+              
+              // New Receipt Notification
+              if (receipt.isNew)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle_rounded, color: AppColors.success, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Payment Approved!',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ),
+                            Text(
+                              'Your payment has been verified. Download your receipt now.',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               
               // Receipt Preview
               Container(
