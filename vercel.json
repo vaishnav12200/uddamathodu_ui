@@ -1,5 +1,5 @@
 {
-  "buildCommand": "curl -s https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.0-stable.tar.xz | tar -xJ && flutter/bin/flutter build web --release",
+  "buildCommand": "curl -s https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.29.0-stable.tar.xz | tar -xJ && flutter/bin/flutter build web --release",
   "outputDirectory": "build/web",
   "framework": null,
   "installCommand": "echo 'Skip install'"
