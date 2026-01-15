@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
+import '../../auth/screens/landing_screen.dart';
 
 class MemberSidebar extends StatelessWidget {
   final int selectedIndex;
@@ -33,6 +35,8 @@ class MemberSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    
     return Container(
       width: 260,
       decoration: BoxDecoration(
@@ -48,7 +52,7 @@ class MemberSidebar extends StatelessWidget {
       child: Column(
         children: [
           // Logo Section
-          _buildLogoSection(),
+          _buildLogoSection(l10n),
           
           const Divider(height: 1, color: AppColors.borderLight),
           
@@ -70,7 +74,7 @@ class MemberSidebar extends StatelessWidget {
           ),
           
           // Logout Button
-          _buildLogoutButton(context),
+          _buildLogoutButton(context, l10n),
           
           const SizedBox(height: 16),
         ],
@@ -78,7 +82,7 @@ class MemberSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoSection() {
+  Widget _buildLogoSection(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -106,7 +110,7 @@ class MemberSidebar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Uddamthodu Tharavad',
+                  l10n.get('app_name'),
                   style: AppTextStyles.heading3.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -114,7 +118,7 @@ class MemberSidebar extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  'Member Portal',
+                  l10n.get('member_portal'),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.primaryBlue,
                     fontWeight: FontWeight.w500,
@@ -192,7 +196,7 @@ class MemberSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
+  Widget _buildLogoutButton(BuildContext context, AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
       child: Material(
@@ -200,7 +204,7 @@ class MemberSidebar extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () {
-            _showLogoutDialog(context);
+            _showLogoutDialog(context, l10n);
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -219,7 +223,7 @@ class MemberSidebar extends StatelessWidget {
                 ),
                 const SizedBox(width: 14),
                 Text(
-                  'Logout',
+                  l10n.get('logout'),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -234,31 +238,34 @@ class MemberSidebar extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Logout'),
+        title: Text(l10n.get('logout')),
         content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              l10n.get('cancel'),
               style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // Navigate to login screen
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              // Navigate to landing screen
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LandingScreen()),
+                (route) => false,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Logout'),
+            child: Text(l10n.get('logout')),
           ),
         ],
       ),

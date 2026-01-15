@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class BalanceCard extends StatelessWidget {
   final String title;
@@ -24,6 +25,8 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -122,7 +125,7 @@ class BalanceCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Pending Balance',
+                    l10n.get('pending_balance'),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withOpacity(0.9),
@@ -158,14 +161,14 @@ class BalanceCard extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.payment_rounded, size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.payment_rounded, size: 20),
+                    const SizedBox(width: 8),
                     Text(
-                      'Enter UPI Payment',
-                      style: TextStyle(
+                      l10n.get('submit_upi_payment'),
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),

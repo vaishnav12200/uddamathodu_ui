@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class PaymentRecord {
   final String monthYear;
@@ -66,6 +67,7 @@ class PaymentHistoryTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSmall = MediaQuery.of(context).size.width < 600;
+    final l10n = context.l10n;
     
     return Container(
       decoration: BoxDecoration(
@@ -89,7 +91,7 @@ class PaymentHistoryTable extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Payment History',
+                  l10n.get('payment_history'),
                   style: AppTextStyles.heading3.copyWith(fontSize: 18),
                 ),
                 if (onViewAllPressed != null)
@@ -99,7 +101,7 @@ class PaymentHistoryTable extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'View All',
+                          l10n.get('view_all'),
                           style: AppTextStyles.link,
                         ),
                         const SizedBox(width: 4),
@@ -127,7 +129,7 @@ class PaymentHistoryTable extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Month/Year',
+                      l10n.get('date'),
                       style: AppTextStyles.bodySmall.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
@@ -137,7 +139,7 @@ class PaymentHistoryTable extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Contribution Type',
+                      l10n.get('type'),
                       style: AppTextStyles.bodySmall.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
@@ -147,7 +149,7 @@ class PaymentHistoryTable extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Amount',
+                      l10n.get('amount'),
                       style: AppTextStyles.bodySmall.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
@@ -158,7 +160,7 @@ class PaymentHistoryTable extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Status',
+                      l10n.get('status'),
                       style: AppTextStyles.bodySmall.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,

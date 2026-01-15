@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
+import '../../../shared/widgets/language_selector.dart';
 import '../../admin/screens/admin_dashboard_screen.dart';
 import '../../member/screens/member_dashboard_screen.dart';
 import 'signup_screen.dart';
@@ -26,10 +28,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // Role options based on login type
-  final List<String> _memberRoles = ['Member'];
-  final List<String> _adminRoles = ['President', 'Secretary', 'Treasurer'];
-
   @override
   void initState() {
     super.initState();
@@ -53,8 +51,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.dispose();
   }
 
-  List<String> get _currentRoles {
-    return _tabController.index == 0 ? _memberRoles : _adminRoles;
+  List<String> _getMemberRoles(AppLocalizations l10n) {
+    return [l10n.get('member')];
+  }
+
+  List<String> _getAdminRoles(AppLocalizations l10n) {
+    return [l10n.get('president'), l10n.get('secretary'), l10n.get('treasurer')];
+  }
+
+  List<String> _getCurrentRoles(AppLocalizations l10n) {
+    return _tabController.index == 0 ? _getMemberRoles(l10n) : _getAdminRoles(l10n);
   }
 
   @override
@@ -81,6 +87,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildHeader() {
+    final l10n = context.l10n;
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
@@ -104,17 +112,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           ),
           const SizedBox(width: 8),
           // Logo
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.people_alt_rounded,
-              color: AppColors.primaryBlue,
-              size: 20,
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.people_alt_rounded,
+                color: AppColors.primaryBlue,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -124,14 +135,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Uddamthodu Tharavad',
+                  l10n.get('app_name'),
                   style: AppTextStyles.heading3.copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'Management System',
+                  l10n.get('management_system'),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                     fontSize: 10,
@@ -141,31 +152,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
           ),
           // Language Selector
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.borderLight),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('🇮🇳', style: TextStyle(fontSize: 12)),
-                const SizedBox(width: 4),
-                Text(
-                  'EN',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const LanguageSelector(isCompact: true),
           const SizedBox(width: 8),
           // Notification Bell
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showComingSoonSnackBar(l10n.get('notifications'));
+            },
             icon: const Icon(
               Icons.notifications_outlined,
               color: AppColors.textSecondary,
@@ -188,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 const Icon(Icons.person_outline, color: Colors.white, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  'Login',
+                  l10n.get('login'),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -203,6 +196,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildLoginForm() {
+    final l10n = context.l10n;
+    
     return Container(
       margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -222,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           
           // Welcome Text
           Text(
-            'Welcome Back!',
+            l10n.get('welcome_back'),
             style: AppTextStyles.heading2.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -259,20 +254,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 Tab(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.people_outline, size: 18),
-                      SizedBox(width: 6),
-                      Text('Member Login'),
+                    children: [
+                      const Icon(Icons.people_outline, size: 18),
+                      const SizedBox(width: 6),
+                      Text(l10n.get('member_login')),
                     ],
                   ),
                 ),
                 Tab(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.admin_panel_settings_outlined, size: 18),
-                      SizedBox(width: 6),
-                      Text('Admin Login'),
+                    children: [
+                      const Icon(Icons.admin_panel_settings_outlined, size: 18),
+                      const SizedBox(width: 6),
+                      Text(l10n.get('admin_login')),
                     ],
                   ),
                 ),
@@ -291,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 children: [
                   // Role Selection Label
                   Text(
-                    'Are you logging in as?',
+                    l10n.get('are_you_logging_as'),
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -301,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   // Role Dropdown
                   DropdownButtonFormField<String>(
                     value: _selectedRole,
-                    hint: const Text('Select Role'),
+                    hint: Text(l10n.get('select_role')),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -316,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         borderSide: const BorderSide(color: AppColors.borderLight),
                       ),
                     ),
-                    items: _currentRoles.map((role) {
+                    items: _getCurrentRoles(l10n).map((role) {
                       return DropdownMenuItem(
                         value: role,
                         child: Text(role),
@@ -329,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please select a role';
+                        return l10n.get('select_role');
                       }
                       return null;
                     },
@@ -340,7 +335,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      hintText: 'Enter your username',
+                      hintText: l10n.get('enter_username'),
                       prefixIcon: const Icon(
                         Icons.person_outline,
                         color: AppColors.textLight,
@@ -357,7 +352,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your username';
+                        return l10n.get('enter_username');
                       }
                       return null;
                     },
@@ -369,7 +364,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      hintText: 'Password',
+                      hintText: l10n.get('password'),
                       prefixIcon: const Icon(
                         Icons.lock_outline,
                         color: AppColors.textLight,
@@ -395,7 +390,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return l10n.get('password');
                       }
                       return null;
                     },
@@ -426,14 +421,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Remember me',
+                            l10n.get('remember_me'),
                             style: AppTextStyles.bodyMedium,
                           ),
                         ],
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Navigate to forgot password
+                          _showComingSoonSnackBar(l10n.get('forgot_password'));
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -441,7 +436,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'Forgot password?',
+                          '${l10n.get('forgot_password')}',
                           style: AppTextStyles.link.copyWith(
                             color: AppColors.primaryBlue,
                           ),
@@ -474,9 +469,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
+                          : Text(
+                              l10n.get('login'),
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -495,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         color: AppColors.textSecondary,
                       ),
                       label: Text(
-                        'Back to Home',
+                        l10n.get('back_to_home'),
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -509,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        "${l10n.get('no_account')} ",
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -531,7 +526,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                            'Sign Up',
+                            l10n.get('sign_up'),
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.primaryBlue,
                               fontWeight: FontWeight.w600,
@@ -551,6 +546,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildBottomSection() {
+    final l10n = context.l10n;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
@@ -560,27 +557,48 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Need help? Contact us ',
+                '${l10n.get('need_help')} ',
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              const Icon(
-                Icons.email_outlined,
-                size: 16,
-                color: AppColors.primaryBlue,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'udmthodu@gmail.com',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.primaryBlue,
-                  fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: () {
+                  _showComingSoonSnackBar(l10n.get('help'));
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.email_outlined,
+                      size: 16,
+                      color: AppColors.primaryBlue,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'udmthodu@gmail.com',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showComingSoonSnackBar(String feature) {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature - ${l10n.get('feature_coming_soon')}'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

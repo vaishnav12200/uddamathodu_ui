@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class Receipt {
   final String id;
@@ -80,6 +81,7 @@ class ReceiptListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSmall = MediaQuery.of(context).size.width < 600;
+    final l10n = context.l10n;
     
     return Container(
       decoration: BoxDecoration(
@@ -118,7 +120,7 @@ class ReceiptListWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Recent Receipts',
+                      l10n.get('recent_receipts'),
                       style: AppTextStyles.heading3.copyWith(fontSize: 18),
                     ),
                   ],
@@ -130,7 +132,7 @@ class ReceiptListWidget extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'View All',
+                          l10n.get('view_all'),
                           style: AppTextStyles.link,
                         ),
                         const SizedBox(width: 4),

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../auth/screens/landing_screen.dart';
 
 class MemberHeader extends StatelessWidget {
   final VoidCallback? onMenuPressed;
+  final VoidCallback? onProfilePressed;
+  final VoidCallback? onNotificationPressed;
+  final VoidCallback? onHelpPressed;
 
   const MemberHeader({
     super.key,
     this.onMenuPressed,
+    this.onProfilePressed,
+    this.onNotificationPressed,
+    this.onHelpPressed,
   });
 
   @override
@@ -39,17 +47,17 @@ class MemberHeader extends StatelessWidget {
           const Spacer(),
           
           // Language Selector
-          _buildLanguageSelector(),
+          const LanguageSelector(showFullName: true),
           
           const SizedBox(width: 16),
           
           // Notifications
-          _buildNotificationButton(),
+          _buildNotificationButton(context),
           
           const SizedBox(width: 12),
           
           // Help Button
-          _buildHelpButton(),
+          _buildHelpButton(context),
           
           const SizedBox(width: 16),
           
@@ -60,40 +68,15 @@ class MemberHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.borderLight),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('🇮🇳', style: TextStyle(fontSize: 16)),
-          const SizedBox(width: 6),
-          Text(
-            'English',
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(width: 4),
-          const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 18,
-            color: AppColors.textSecondary,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotificationButton() {
+  Widget _buildNotificationButton(BuildContext context) {
+    final l10n = context.l10n;
+    
     return Stack(
       children: [
         IconButton(
-          onPressed: () {},
+          onPressed: onNotificationPressed ?? () {
+            _showComingSoon(context, l10n.get('notifications'));
+          },
           style: IconButton.styleFrom(
             backgroundColor: AppColors.backgroundLight,
             shape: RoundedRectangleBorder(
@@ -122,9 +105,13 @@ class MemberHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildHelpButton() {
+  Widget _buildHelpButton(BuildContext context) {
+    final l10n = context.l10n;
+    
     return IconButton(
-      onPressed: () {},
+      onPressed: onHelpPressed ?? () {
+        _showHelpDialog(context, l10n);
+      },
       style: IconButton.styleFrom(
         backgroundColor: AppColors.backgroundLight,
         shape: RoundedRectangleBorder(
@@ -139,6 +126,8 @@ class MemberHeader extends StatelessWidget {
   }
 
   Widget _buildProfileSection(BuildContext context) {
+    final l10n = context.l10n;
+    
     return PopupMenuButton<String>(
       offset: const Offset(0, 50),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -174,7 +163,7 @@ class MemberHeader extends StatelessWidget {
             children: [
               const Icon(Icons.person_outline, size: 20),
               const SizedBox(width: 12),
-              const Text('My Profile'),
+              Text(l10n.get('my_profile')),
             ],
           ),
         ),
@@ -184,7 +173,7 @@ class MemberHeader extends StatelessWidget {
             children: [
               const Icon(Icons.settings_outlined, size: 20),
               const SizedBox(width: 12),
-              const Text('Settings'),
+              Text(l10n.get('settings')),
             ],
           ),
         ),
@@ -195,16 +184,108 @@ class MemberHeader extends StatelessWidget {
             children: [
               Icon(Icons.logout_rounded, size: 20, color: AppColors.error),
               const SizedBox(width: 12),
-              Text('Logout', style: TextStyle(color: AppColors.error)),
+              Text(l10n.get('logout'), style: TextStyle(color: AppColors.error)),
             ],
           ),
         ),
       ],
       onSelected: (value) {
         if (value == 'logout') {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          _showLogoutConfirmation(context, l10n);
+        } else if (value == 'profile') {
+          onProfilePressed?.call();
+        } else if (value == 'settings') {
+          _showComingSoon(context, l10n.get('settings'));
         }
       },
+    );
+  }
+
+  void _showComingSoon(BuildContext context, String feature) {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature - ${l10n.get('feature_coming_soon')}'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.help_outline, color: AppColors.primaryBlue),
+            const SizedBox(width: 12),
+            Text(l10n.get('help')),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${l10n.get('need_help')}'),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(Icons.email_outlined, size: 18, color: AppColors.primaryBlue),
+                const SizedBox(width: 8),
+                const Text('udmthodu@gmail.com'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.phone_outlined, size: 18, color: AppColors.primaryBlue),
+                const SizedBox(width: 8),
+                const Text('+91 9876543210'),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.get('close')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l10n.get('logout')),
+        content: Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.get('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LandingScreen()),
+                (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.get('logout')),
+          ),
+        ],
+      ),
     );
   }
 }

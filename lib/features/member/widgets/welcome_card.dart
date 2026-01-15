@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class WelcomeCard extends StatelessWidget {
   final String memberName;
@@ -14,9 +15,21 @@ class WelcomeCard extends StatelessWidget {
     required this.totalBalance,
   });
 
+  String _getGreeting(AppLocalizations l10n) {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return l10n.get('good_morning');
+    } else if (hour < 17) {
+      return l10n.get('good_afternoon');
+    } else {
+      return l10n.get('good_evening');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isSmall = MediaQuery.of(context).size.width < 600;
+    final l10n = context.l10n;
     
     return Container(
       padding: EdgeInsets.all(isSmall ? 16 : 20),
@@ -55,7 +68,7 @@ class WelcomeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome,',
+                  '${_getGreeting(l10n)},',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -78,7 +91,7 @@ class WelcomeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    'ID: #$memberId',
+                    '${l10n.get('member_id')}: #$memberId',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.primaryBlue,
                       fontWeight: FontWeight.w600,

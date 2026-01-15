@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
+import 'core/localization/app_localizations.dart';
+import 'core/localization/language_provider.dart';
 import 'features/auth/screens/landing_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,11 +20,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Uddamthodu Tharavad Management System',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const LandingScreen(),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          title: 'Uddamthodu Tharavad Management System',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          locale: languageProvider.locale,
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ml'),
+          ],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const LandingScreen(),
+        );
+      },
     );
   }
 }

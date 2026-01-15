@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../widgets/member_sidebar.dart';
 import '../widgets/member_header.dart';
 import '../widgets/welcome_card.dart';
@@ -25,18 +26,22 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
   int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<String> _menuItems = [
-    'Dashboard',
-    'Contributions',
-    'Receipts',
-    'Notices',
-    'Profile',
-  ];
+  List<String> _getMenuItems(AppLocalizations l10n) {
+    return [
+      l10n.get('dashboard'),
+      l10n.get('contributions'),
+      l10n.get('receipts'),
+      l10n.get('notices'),
+      l10n.get('profile'),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
     final isTablet = MediaQuery.of(context).size.width > 600;
+    final l10n = context.l10n;
+    final menuItems = _getMenuItems(l10n);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -47,7 +52,7 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
           setState(() => _selectedIndex = index);
           Navigator.pop(context);
         },
-        menuItems: _menuItems,
+        menuItems: menuItems,
       ),
       body: SafeArea(
         child: Row(
@@ -59,7 +64,7 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
                 onItemSelected: (index) {
                   setState(() => _selectedIndex = index);
                 },
-                menuItems: _menuItems,
+                menuItems: menuItems,
               ),
             
             // Main content
@@ -71,6 +76,9 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
                     onMenuPressed: isDesktop 
                         ? null 
                         : () => _scaffoldKey.currentState?.openDrawer(),
+                    onProfilePressed: () {
+                      setState(() => _selectedIndex = 4);
+                    },
                   ),
                   
                   // Content
@@ -104,6 +112,8 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
   }
 
   Widget _buildDashboardContent(bool isDesktop, bool isTablet) {
+    final l10n = context.l10n;
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(isDesktop ? 24 : 16),
       child: Column(
@@ -111,7 +121,7 @@ class _MemberDashboardScreenState extends State<MemberDashboardScreen> {
         children: [
           // Page Title
           Text(
-            'Member Dashboard',
+            l10n.get('member_dashboard'),
             style: AppTextStyles.heading2.copyWith(
               fontSize: isDesktop ? 28 : 22,
             ),

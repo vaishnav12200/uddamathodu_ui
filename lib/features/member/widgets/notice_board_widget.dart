@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class Notice {
   final String id;
@@ -57,6 +58,8 @@ class NoticeBoardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    
     return Container(
       decoration: BoxDecoration(
         color: AppColors.backgroundWhite,
@@ -94,7 +97,7 @@ class NoticeBoardWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Notice Board',
+                      l10n.get('notice_board'),
                       style: AppTextStyles.heading3.copyWith(fontSize: 18),
                     ),
                   ],
@@ -106,7 +109,7 @@ class NoticeBoardWidget extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'View All',
+                          l10n.get('view_all'),
                           style: AppTextStyles.link,
                         ),
                         const SizedBox(width: 4),
@@ -137,7 +140,7 @@ class NoticeBoardWidget extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final notice = _sampleNotices[index];
-              return _buildNoticeItem(notice);
+              return _buildNoticeItem(context, notice);
             },
           ),
           
@@ -147,7 +150,8 @@ class NoticeBoardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNoticeItem(Notice notice) {
+  Widget _buildNoticeItem(BuildContext context, Notice notice) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -202,7 +206,7 @@ class NoticeBoardWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          'New',
+                          l10n.get('new_badge'),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
