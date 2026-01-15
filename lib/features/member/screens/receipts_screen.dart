@@ -291,6 +291,9 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
   }
 
   Widget _buildDesktopGrid() {
+    if (_filteredReceipts.isEmpty) {
+      return _buildEmptyState();
+    }
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -308,6 +311,9 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
   }
 
   Widget _buildMobileList() {
+    if (_filteredReceipts.isEmpty) {
+      return _buildEmptyState();
+    }
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -316,6 +322,30 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
       itemBuilder: (context, index) {
         return _buildReceiptCard(_filteredReceipts[index]);
       },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      padding: const EdgeInsets.all(40),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.receipt_long_outlined,
+            size: 64,
+            color: AppColors.textLight,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No receipts found',
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -218,21 +218,22 @@ class _ContributionHistoryScreenState extends State<ContributionHistoryScreen> {
                   ),
                 
                 // List
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _filteredContributions.length,
-                  separatorBuilder: (_, __) => const Divider(
-                    height: 1,
-                    color: AppColors.borderLight,
+                if (_filteredContributions.isNotEmpty)
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _filteredContributions.length,
+                    separatorBuilder: (_, __) => const Divider(
+                      height: 1,
+                      color: AppColors.borderLight,
+                    ),
+                    itemBuilder: (context, index) {
+                      final contribution = _filteredContributions[index];
+                      return isSmall
+                          ? _buildMobileRow(contribution)
+                          : _buildDesktopRow(contribution);
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    final contribution = _filteredContributions[index];
-                    return isSmall
-                        ? _buildMobileRow(contribution)
-                        : _buildDesktopRow(contribution);
-                  },
-                ),
                 
                 if (_filteredContributions.isEmpty)
                   Padding(
